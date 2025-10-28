@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useCallback, useState } from 'react';
 import {NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   View,
@@ -38,11 +38,13 @@ function LoginForm({navigation}: LoginScreenProps) {
         : Alert.alert("Usuario o contraseña incorrectos");
 };
 
-    const handleLogin = () => {
-       (username === USUARIO.username && password === USUARIO.password)
-        ? navigation.navigate('Home')
-        : showAlert();
-    };
+    const handleLogin = useCallback(() => {
+      if (username === USUARIO.username && password === USUARIO.password) {
+        navigation.navigate('Home');
+      } else {
+        showAlert();
+      }
+    }, [username, password, navigation]);
 
     return (
          <View style={styles.container}>
