@@ -1,5 +1,4 @@
-import React, { useCallback, useState } from 'react';
-import {NativeStackNavigationProp } from '@react-navigation/native-stack';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,47 +6,32 @@ import {
   TouchableOpacity,
   Alert,
   StyleSheet,
-  Platform
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useAuth } from '../../context/AuthContext';
 
-
-type RootStackParamList = {
-  Login: undefined;
-  Home: undefined;
+const USUARIO = {
+  username: 'admin',
+  password: '1234'
 };
 
-type LoginScreenNavigationProp = NativeStackNavigationProp<RootStackParamList, 'Login'>;
+export default function LoginScreen() {
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const { login } = useAuth();
+  const router = useRouter();
 
-type LoginScreenProps = {
-  navigation: LoginScreenNavigationProp;
-};
-
-function LoginForm({navigation}: LoginScreenProps) {
-
-    const [username, setUsername] = useState('');
-    const [password, setPassword] = useState('');
-
-    const USUARIO = {
-        username: 'admin',
-        password: '1234'
+  const handleLogin = () => {
+    if (username === USUARIO.username && password === USUARIO.password) {
+      login(username);
+      router.replace('/(tabs)');
+    } else {
+      Alert.alert("Error", "Usuario o contraseña incorrectos");
     }
+  };
 
-    const showAlert = () => {
-     (Platform.OS === 'web')
-        ? alert("Usuario o contraseña incorrectos. Por favor, verifica tus credenciales.")
-        : Alert.alert("Usuario o contraseña incorrectos");
-};
-
-    const handleLogin = useCallback(() => {
-      if (username === USUARIO.username && password === USUARIO.password) {
-        navigation.navigate('Home');
-      } else {
-        showAlert();
-      }
-    }, [username, password, navigation]);
-
-    return (
-         <View style={styles.container}>
+  return (
+    <View style={styles.container}>
       <Text style={styles.title}>Iniciar Sesión</Text>
 
       <TextInput
@@ -75,7 +59,7 @@ function LoginForm({navigation}: LoginScreenProps) {
         Usuario: admin{'\n'}Contraseña: 1234
       </Text>
     </View>
-    );
+  );
 }
 
 const styles = StyleSheet.create({
@@ -115,7 +99,7 @@ const styles = StyleSheet.create({
   buttonText: {
     color: 'white',
     fontSize: 18,
-    fontWeight: '600',
+    fontWeight: 'bold',
   },
   hint: {
     marginTop: 20,
@@ -123,11 +107,4 @@ const styles = StyleSheet.create({
     color: '#666',
     fontSize: 14,
   },
-  helloText: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#007AFF',
-  },
 });
-
-export default LoginForm;
